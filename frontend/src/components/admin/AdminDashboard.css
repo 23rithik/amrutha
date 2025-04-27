@@ -1,0 +1,106 @@
+.admin-dashboard {
+    background-color: #fff6fa;
+    min-height: 100vh;
+  }
+  
+  .logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #d6006d;
+    padding: 10px;
+  }
+  
+  .topbar {
+    background-color: #d6006d !important;
+    color: white;
+    border-radius: 8px;
+  }
+  
+  .stat-card {
+    background-color: #f8a1c4 !important;
+    color: white;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .stat-card:hover,
+  .chart-card:hover,
+  .activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  .chart-card,
+  .activity-card {
+    background-color: white !important;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+  }
+  
+  .activity-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    margin-top: 10px;
+  }
+  
+  .activity-list li::before {
+    content: "✓";
+    margin-right: 10px;
+    color: green;
+  }
+  
+  .logout-btn {
+    margin: 20px;
+    background-color: #f55da4;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .logout-btn:hover {
+    background-color: #e84290;
+  }
+  
+  .active-item {
+    background-color: #fbb1cc !important;
+    border-radius: 4px;
+  }
+  
+  .MuiListItem-button:hover {
+    background-color: #fce4ec;
+    border-radius: 4px;
+  }
+  
+  @media (max-width: 768px) {
+    .logout-btn {
+      margin: 10px;
+      font-size: 14px;
+      padding: 8px;
+    }
+  
+    .chart-card img {
+      max-width: 100%;
+      height: auto;
+    }
+  
+    .topbar {
+      border-radius: 0;
+    }
+  
+    .stat-card {
+      font-size: 14px;
+    }
+  }
+  .MuiCollapse-root .MuiListItem-root {
+    transition: all 0.3s ease;
+  }
+  
+  
