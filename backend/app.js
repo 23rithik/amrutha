@@ -15,6 +15,7 @@ const approval = require('./routes/approval');
 const feedbackRoutes = require('./routes/feedbacks');
 const pediatricFeedbackRoutes = require('./routes/pediatricFeedbacks');
 const activityRoutes = require('./routes/activityRoutes');
+const adminAnalyticsRoutes = require('./routes/adminAnalytics');
 
 // Ensure required directories exist
 const uploadDir = path.join(__dirname, 'uploads/licenses');
@@ -41,6 +42,8 @@ app.use('/api', approval);
 app.use('/api', feedbackRoutes);
 app.use('/api', pediatricFeedbackRoutes);
 app.use('/api', activityRoutes);
+app.use('/api', adminAnalyticsRoutes);
+
 
 // ✅ Wildcard route for frontend (only after static + API routes)
 app.get('/*', function (req, res) {

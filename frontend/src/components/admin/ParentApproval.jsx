@@ -17,10 +17,12 @@ import {
   useMediaQuery,
   Menu,
   MenuItem,
+  Snackbar,
+  Alert,
+  Chip,
+  CircularProgress
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-
-import axios from 'axios'; // ⬅️ use regular axios temporarily
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import axiosInstance from '../../axiosinterceptor';
@@ -30,48 +32,124 @@ function ParentApproval() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [parents, setParents] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const navigate = useNavigate();
 
-  const userAvatar = '/user-avatar.jpg';
+  // Snackbar state
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
-  // ✅ Fetch parents from backend
+  const statusColors = {
+    0: 'default', // Pending
+    1: 'success', // Approved
+    2: 'error'    // Rejected
+  };
+
+  const statusText = {
+    0: 'Pending',
+    1: 'Approved',
+    2: 'Rejected'
+  };
+
   const fetchParents = async () => {
-    console.log("Fetching parents...");
+    setIsRefreshing(true);
     try {
       const response = await axiosInstance.get('/api/all-parents');
-      console.log("Fetched parents data:", response.data);
-      if (Array.isArray(response.data)) {
-        setParents(response.data);
-      } else {
-        console.error("Expected an array but got:", typeof response.data);
-        setParents([]);
-      }
+      setParents(response.data);
+      localStorage.setItem('parentsData', JSON.stringify(response.data));
     } catch (err) {
       console.error(err);
+      showSnackbar('Error fetching parents', 'error');
+      
+      // Fallback to cached data if available
+      const cachedData = localStorage.getItem('parentsData');
+      if (cachedData) {
+        setParents(JSON.parse(cachedData));
+      }
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
     }
   };
-  
 
-  // ✅ Trigger fetch on mount
   useEffect(() => {
-    console.log("🚀 Component mounted");
+    // Load cached data immediately
+    const cachedData = localStorage.getItem('parentsData');
+    if (cachedData) {
+      setParents(JSON.parse(cachedData));
+    }
+
     fetchParents();
+
+    const handleBeforeUnload = (e) => {
+      if (isRefreshing) {
+        e.preventDefault();
+        e.returnValue = 'Data is still loading. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, []);
 
-  const updateStatus = async (id, status) => {
+  const updateStatus = async (parentId, status, parentName) => {
+    if (isRefreshing) {
+      showSnackbar('Please wait until data loading completes', 'warning');
+      return;
+    }
+
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.put(`/api/parents/${id}/status`, { status }, {
-        headers: { Authorization: token },
-      });
-      console.log("Status updated:", response.data);
-      fetchParents(); // Refresh list
+      const response = await axiosInstance.put(
+        `/api/parents/${parentId}/status`, 
+        { status },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      );
+      
+      if (response.data.success === false) {
+        throw new Error(response.data.message || 'Update failed');
+      }
+      
+      const updatedParents = parents.map(parent => 
+        parent._id === parentId ? { ...parent, status } : parent
+      );
+      
+      setParents(updatedParents);
+      localStorage.setItem('parentsData', JSON.stringify(updatedParents));
+      
+      showSnackbar(
+        `${parentName} ${status === 1 ? 'approved' : 'rejected'} successfully!`, 
+        'success'
+      );
+      
     } catch (err) {
-      console.error("❌ Error updating status:", err.response?.data || err.message);
-      alert(`Error: ${err.response?.data?.message || err.message}`); // Display error
+      console.error("Error updating status:", err);
+      const errorMessage = err.response?.data?.message || 
+                         err.message || 
+                         'Failed to update status';
+      showSnackbar(errorMessage, 'error');
     }
   };
-  
+
+  // Snackbar functions
+  const showSnackbar = (message, severity) => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
 
   const handleAvatarClick = (event) => setAnchorEl(event.currentTarget);
   const handleCloseMenu = () => setAnchorEl(null);
@@ -98,90 +176,116 @@ function ParentApproval() {
             )}
             <Typography variant="h6">Parent Approval</Typography>
             <IconButton onClick={handleAvatarClick}>
-              <Avatar src={userAvatar} alt="Admin" />
+              <Avatar sx={{ bgcolor: '#ff99bb' }}>A</Avatar>
             </IconButton>
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleCloseMenu}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
               <MenuItem onClick={handleChangePasswordClick}>Change Password</MenuItem>
             </Menu>
           </Toolbar>
         </AppBar>
 
-        <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>Registered Parents</Typography>
+        <Typography variant="h5" gutterBottom sx={{ mt: 2 }}>
+          Registered Parents
+          {loading && <Chip label="Loading..." size="small" sx={{ ml: 2 }} />}
+        </Typography>
+        
         <TableContainer component={Paper} sx={{ mt: 2 }}>
           <Table>
-          <TableHead sx={{ backgroundColor: '#ffe6ee' }}>
-            <TableRow>
+            <TableHead sx={{ backgroundColor: '#ffe6ee' }}>
+              <TableRow>
                 <TableCell>Parent Name</TableCell>
                 <TableCell>Child Name</TableCell>
                 <TableCell>Email</TableCell>
                 <TableCell>Phone</TableCell>
-                <TableCell>Address</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>Child Photo</TableCell>
                 <TableCell>Medical History</TableCell>
                 <TableCell align="center">Actions</TableCell>
-            </TableRow>
+              </TableRow>
             </TableHead>
 
             <TableBody>
-                {parents.map((entry) => (
-                    <TableRow key={entry._id}>
-                    <TableCell>{entry.parent_name}</TableCell>
-                    <TableCell>{entry.child_name}</TableCell>
-                    <TableCell>{entry.emailid}</TableCell>
-                    <TableCell>{entry.phone_number}</TableCell>
-                    <TableCell>{entry.address}</TableCell>
+              {parents.length > 0 ? (
+                parents.map((parent) => (
+                  <TableRow key={parent._id}>
+                    <TableCell>{parent.parent_name}</TableCell>
+                    <TableCell>{parent.child_name}</TableCell>
+                    <TableCell>{parent.emailid}</TableCell>
+                    <TableCell>{parent.phone_number}</TableCell>
                     <TableCell>
-                        <img
-                        src={entry.child_photo}
+                      <Chip 
+                        label={statusText[parent.status] || 'Unknown'} 
+                        color={statusColors[parent.status] || 'default'} 
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <img
+                        src={parent.child_photo}
                         alt="Child"
                         style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: '8px' }}
-                        />
+                      />
                     </TableCell>
                     <TableCell>
-                    <Button
+                      <Button
                         variant="outlined"
-                        component="a"
-                        href={`http://localhost:4000/uploads/medical_history/${entry.medical_history_pdf.split('/').pop()}`}
+                        href={`http://localhost:4000/uploads/medical_history/${parent.medical_history_pdf.split('/').pop()}`}
                         target="_blank"
-                        rel="noopener noreferrer"
-                        >
-                        Show medical history
-                    </Button>
-
+                        disabled={isRefreshing}
+                      >
+                        View PDF
+                      </Button>
                     </TableCell>
                     <TableCell align="center">
-                        <Button
+                      <Button
                         variant="contained"
                         color="success"
-                        sx={{ mr: 1 }}
-                        onClick={() => updateStatus(entry._id, 1)}
-                        >
-                        Approve
-                        </Button>
-                        <Button
+                        sx={{ mr: 1, mb: 1 }}
+                        onClick={() => updateStatus(parent._id, 1, parent.parent_name)}
+                        disabled={parent.status === 1 || isRefreshing} // Disable if already approved (status 1) or refreshing
+                        startIcon={isRefreshing ? <CircularProgress size={20} /> : null}
+                      >
+                        {isRefreshing ? 'Processing...' : 'Approve'}
+                      </Button>
+                      <Button
                         variant="contained"
                         color="error"
-                        onClick={() => updateStatus(entry._id, 2)}
-                        >
-                        Reject
-                        </Button>
+                        onClick={() => updateStatus(parent._id, 2, parent.parent_name)}
+                        disabled={parent.status === 2 || isRefreshing} // Disable if already rejected (status 2) or refreshing
+                        startIcon={isRefreshing ? <CircularProgress size={20} /> : null}
+                      >
+                        {isRefreshing ? 'Processing...' : 'Reject'}
+                      </Button>
                     </TableCell>
-                    </TableRow>
-                ))}
-                </TableBody>
-
-
-
-
-
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={8} align="center">
+                    {loading ? (
+                      <CircularProgress />
+                    ) : (
+                      'No parents found'
+                    )}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
           </Table>
         </TableContainer>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+        >
+          <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Box>
     </Box>
   );

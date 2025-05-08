@@ -104,7 +104,7 @@ const AdminFeedback = () => {
             )}
             <Typography variant="h6">Parent Feedback Management</Typography>
             <IconButton>
-              <Avatar alt="Admin" />
+              <Avatar src='/avatar.jpg' alt="Admin" />
             </IconButton>
           </Toolbar>
         </AppBar>

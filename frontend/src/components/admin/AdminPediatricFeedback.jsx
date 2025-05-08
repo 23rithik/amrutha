@@ -28,7 +28,7 @@ const AdminPediatricFeedback = () => {
   const isMobile = useMediaQuery('(max-width:768px)');
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const userAvatar = '/path/to/default-avatar.png'; // Replace with actual avatar URL
+  const userAvatar = 'avatar.jpg'; // Replace with actual avatar URL
 
   useEffect(() => {
     axiosInstance.get('/api/pediatric-feedbacks')

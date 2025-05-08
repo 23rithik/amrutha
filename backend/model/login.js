@@ -20,13 +20,12 @@ const loginSchema = new mongoose.Schema({
   },
   parent_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Patient' // optional: only if you're referencing Patient
+    ref: 'Patient'
   },
   pediatrician_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Pediatrician'
   }
-  
-}, { collection: 'logins' }); // 👈 This ensures the collection name is exactly 'logins'
+}, { collection: 'logins', timestamps: true }); // ✅ Added timestamps
 
 module.exports = mongoose.model('Login', loginSchema);
