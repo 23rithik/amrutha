@@ -119,7 +119,7 @@ const SignupPediatrician = () => {
 
   return (
     <>
-    <div className="signup-container">
+    <div className="signup-container" style={{ marginBottom: '200px' }}>
       <Navbar />
       <h1>Sign Up - Pediatrician</h1>
       <form className="signup-form" onSubmit={handleSubmit} encType="multipart/form-data" autoComplete="off">

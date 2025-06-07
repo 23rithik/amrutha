@@ -8,6 +8,7 @@ const Pediatrician = require('../model/pediatrician');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
 const SECRET = process.env.JWT_SECRET; // ⬅️ Use env variable
 
 // POST /api/login
@@ -45,6 +46,7 @@ router.post('/login', async (req, res) => {
         SECRET,
         { expiresIn: '1d' }
       );
+
   
       res.json({
         token,

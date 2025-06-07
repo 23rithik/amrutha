@@ -3,6 +3,7 @@ const router = express.Router();
 const Chat = require('../model/Chat');
 const Patient = require('../model/parent'); // Make sure to import your Patient model
 const Pediatrician = require('../model/pediatrician'); // Adjust path as needed
+const Activity = require('../model/Activity'); // Import Activity model
 
 
 // POST: Send a message
@@ -26,6 +27,14 @@ router.post('/chat/send', async (req, res) => {
       sender,
       message,
     });
+
+    await new Activity({
+      userType: 'patient',
+      userId: parent_id,
+      action: 'Sent Message',
+      details: `${patient.parent_name} sent a message to pediatrician.`,
+    }).save();
+
 
     await chatMessage.save();
     res.status(201).json(chatMessage);

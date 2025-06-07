@@ -23,6 +23,10 @@ import ParentFeedbackPage from './components/parent/ParentFeedbackPage';
 import ParentPediatricianFeedbackPage from './components/parent/ParentPediatricianFeedbackPage';
 import EditPediatricProfile from './components/pediatrician/EditPediatricProfile';
 import ReferHospital from './components/pediatrician/ReferHospital';
+import DietChartPage from './components/pediatrician/DietChartPage';
+import PediatricianFeedback from './components/pediatrician/PediatricianparentFeedback';
+import PediatricianAdminFeedback from './components/pediatrician/PediatricianAdminFeedback';
+
 
 const App = () => {
   return (
@@ -46,6 +50,11 @@ const App = () => {
         <Route path="/pediatrichome" element={<PediatricianHomepage/>} />
         <Route path='/pediatric-editprofile' element={<EditPediatricProfile/>} />
         <Route path="refer-hospitals" element={<ReferHospital />} />
+        <Route path="/give-diet" element={<DietChartPage />} />
+        <Route path="feedback-pediatric/parent" element={<PediatricianFeedback />} />
+        <Route path="/feedback-pediatric/admin" element={<PediatricianAdminFeedback />} />
+        
+        {/* Nested routes for Parent */}
 
 
         <Route path="/patienthome" element={<ParentHomepage />} />

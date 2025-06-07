@@ -7,7 +7,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import PersonIcon from '@mui/icons-material/Person';
 
 import axiosInstance from '../../axiosinterceptor';
-import {jwtDecode} from 'jwt-decode';  // Fixed import: no curly braces
+import { jwtDecode } from 'jwt-decode'; // Fixed import: no curly braces
 import { useNavigate } from 'react-router-dom';
 
 const ParentDashboard = () => {
@@ -67,7 +67,6 @@ const ParentDashboard = () => {
       const parentId = decoded.id;
 
       const res = await axiosInstance.get(`/api/patient/photo/${parentId}`);
-      // console.log('Child photo response:', res.data.child_photo);
       setChildPhoto(res.data.child_photo);
     } catch (err) {
       console.error('Error fetching child photo:', err);
@@ -81,7 +80,6 @@ const ParentDashboard = () => {
         if (!token) return navigate('/login');
 
         const decoded = jwtDecode(token);
-        // console.log('Decoded token:', decoded);
         const parentId = decoded.id;
 
         const res = await axiosInstance.get(`/api/parent/name/${parentId}`);
@@ -96,32 +94,29 @@ const ParentDashboard = () => {
     fetchChildPhoto();
     fetchMessages();
 
-    // Auto-refresh chat messages every 5 seconds
     const interval = setInterval(() => {
       fetchMessages();
     }, 4000);
 
-    // Cleanup on unmount
     return () => clearInterval(interval);
   }, [navigate]);
 
   return (
-    <>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <ParentHeader />
       <Box
         sx={{
-          minHeight: 'calc(100vh - 200px)', // Adjust height to account for footer height
+          flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
           px: { xs: 2, sm: 4, md: 6 },
           pt: 13,
-          pb: 4, // Add padding bottom instead of margin
+          pb: 4,
           textAlign: 'left',
           maxWidth: '1100px',
           marginLeft: '200px',
         }}
       >
-
         {/* Welcome + Avatar row */}
         <Box
           sx={{
@@ -159,7 +154,6 @@ const ParentDashboard = () => {
                 width: 60,
                 height: 60,
                 fontSize: 36,
-                boxShadow: '0 4px 12px rgba(194,24,91,0.6)',
                 boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
                 border: '2px solid rgb(4, 15, 5)',
               }}
@@ -167,7 +161,6 @@ const ParentDashboard = () => {
               {!childPhoto && <PersonIcon fontSize="large" />}
             </Avatar>
           </Box>
-
         </Box>
 
         {/* Interact Section */}
@@ -180,7 +173,7 @@ const ParentDashboard = () => {
             mb: 3,
           }}
         >
-          <Typography variant="h5" sx={{  fontWeight: 'bold', color: '#c2185b' }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#c2185b' }}>
             Interact with Your Pediatrician
           </Typography>
           <Typography variant="body1" sx={{ mb: 3 }}>
@@ -243,7 +236,7 @@ const ParentDashboard = () => {
         </Box>
       </Box>
       <ParentFooter />
-    </>
+    </Box>
   );
 };
 

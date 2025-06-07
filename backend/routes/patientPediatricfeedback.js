@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const PediatricFeedback = require('../model/PediatricFeedback');
+const PediatricFeedback = require('../model/ParentPediatricFeedback');
 const Patient = require('../model/parent'); // Import Patient model
 
 // Submit pediatrician feedback
@@ -42,6 +42,32 @@ router.get('/pediatricfeedback/:parentId', async (req, res) => {
     res.json(feedbacks);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch feedbacks' });
+  }
+});
+
+// Get feedbacks by pediatrician ID (new route)
+router.get('/pediatricfeedback/pediatrician/:pediatricianId', async (req, res) => {
+  try {
+    const feedbacks = await PediatricFeedback.find({ pediatrician_id: req.params.pediatricianId }).sort({ createdAt: -1 });
+    res.json(feedbacks);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch feedbacks' });
+  }
+});
+
+// Update reply of a feedback by its ID
+router.put('/pediatricfeedback/reply/:feedbackId', async (req, res) => {
+  try {
+    const { reply } = req.body;
+    const feedback = await PediatricFeedback.findById(req.params.feedbackId);
+    if (!feedback) {
+      return res.status(404).json({ error: 'Feedback not found' });
+    }
+    feedback.reply = reply;
+    await feedback.save();
+    res.json({ message: 'Reply updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update reply' });
   }
 });
 

@@ -55,7 +55,7 @@ const Homepage = () => {
                 Dedicated to providing expert pediatric care and support for your child's well-being.
               </Typography>
 
-              <Button variant="contained" className="cta-button" data-aos="zoom-in" data-aos-delay="200">
+              <Button variant="contained" className="cta-button">
                  Get Assistance
               </Button>
             </div>
@@ -68,11 +68,11 @@ const Homepage = () => {
 
 
           {/* Carousel Section */}
-          <div className="carousel-wrapper" data-aos="zoom-in-up" data-aos-delay="100" style={{ marginTop: '40px', padding: '0 10px' }}>
+          <div className="carousel-wrapper"  style={{ marginTop: '40px', padding: '0 10px' }}>
 
-            <Carousel animation="fade" interval={3000} indicators={true} navButtonsAlwaysVisible={false}>
+            <Carousel animation="fade" interval={2000} indicators={true} navButtonsAlwaysVisible={false}>
               {carouselItems.map((item, index) => (
-                <Card key={index} className="carousel-card" data-aos="fade-up" data-aos-delay={600 + index * 100}>
+                <Card key={index} className="carousel-card" data-aos="fade-up" data-aos-delay={50 + index * 100}>
                   <CardMedia component="img" height="700" image={item.image} alt={item.title} style={{ objectFit: 'cover' }}/>
                   <CardContent>
                     <Typography variant="h5">{item.title}</Typography>
