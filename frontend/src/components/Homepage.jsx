@@ -6,6 +6,8 @@ import './Homepage.css';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Footer from './Footer';
+import { useNavigate } from 'react-router-dom';
+
 
 const Homepage = () => {
   useEffect(() => {
@@ -16,6 +18,7 @@ const Homepage = () => {
       delay: 200,
     });
   }, []);
+  const navigate = useNavigate();
 
   const carouselItems = [
     {
@@ -47,24 +50,29 @@ const Homepage = () => {
             </div>  
 
             <div className="text-container">
-              <Typography variant="h2" className="welcome-text" data-aos="fade-down" data-aos-delay="100">
+              <Typography variant="h2" className="welcome-text" data-aos="fade-down" data-aos-delay="200">
                 Welcome to Pediatric Pal
               </Typography>
 
-              <Typography variant="h6" className="description-text" data-aos="fade-up" data-aos-delay="200">
+              <Typography variant="h6" className="description-text">
                 Dedicated to providing expert pediatric care and support for your child's well-being.
               </Typography>
 
-              <Button variant="contained" className="cta-button">
-                 Get Assistance
+              <Button 
+                variant="contained" 
+                className="cta-button" 
+                onClick={() => navigate('/login')}
+              >
+                Get Assistance
               </Button>
+
             </div>
           </div>
 
 
           {/* <div className="image-container" data-aos="flip-left" data-aos-delay="400" style={{ marginBottom: '60px' }}>
             <img src="/assets/mother-baby.png" alt="Child Care" className="homepage-image" />
-          </div> */}
+          </div> data-aos="fade-up" data-aos-delay={50 + index * 100} */}
 
 
           {/* Carousel Section */}
@@ -72,7 +80,7 @@ const Homepage = () => {
 
             <Carousel animation="fade" interval={2000} indicators={true} navButtonsAlwaysVisible={false}>
               {carouselItems.map((item, index) => (
-                <Card key={index} className="carousel-card" data-aos="fade-up" data-aos-delay={50 + index * 100}>
+                <Card key={index} className="carousel-card" >
                   <CardMedia component="img" height="700" image={item.image} alt={item.title} style={{ objectFit: 'cover' }}/>
                   <CardContent>
                     <Typography variant="h5">{item.title}</Typography>
