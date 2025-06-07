@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Feedback = require('../model/Feedback');
 const PediatricFeedback = require('../model/PediatricFeedback');
+const Activity = require('../model/Activity');
 
 // Get all feedbacks
 router.get('/feedbacks', async (req, res) => {
@@ -17,11 +18,28 @@ router.get('/feedbacks', async (req, res) => {
 router.put('/feedbacks/:id', async (req, res) => {
   try {
     const { reply } = req.body;
+
     const updatedFeedback = await Feedback.findByIdAndUpdate(
       req.params.id,
       { reply },
       { new: true }
     );
+
+    if (!updatedFeedback) {
+      return res.status(404).json({ message: 'Feedback not found' });
+    }
+
+    // Log activity for patient reply
+    if (updatedFeedback.parent_id) {
+      const activity = new Activity({
+        userType: 'patient',
+        userId: updatedFeedback.parent_id,
+        action: 'Received Admin Reply',
+        details: `Admin replied to feedback: "${updatedFeedback.message?.slice(0, 50)}..."`
+      });
+      await activity.save();
+    }
+
     res.json(updatedFeedback);
   } catch (err) {
     res.status(500).json({ error: err.message });

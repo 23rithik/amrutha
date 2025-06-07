@@ -16,6 +16,15 @@ const feedbackRoutes = require('./routes/feedbacks');
 const pediatricFeedbackRoutes = require('./routes/pediatricFeedbacks');
 const activityRoutes = require('./routes/activityRoutes');
 const adminAnalyticsRoutes = require('./routes/adminAnalytics');
+const passwordRoutes = require('./routes/password');
+const chatRoutes = require('./routes/chat');
+const EditPatientProfile = require('./routes/ParentEditProfile');
+const hospitalRoutes = require('./routes/hospital'); // Assuming you have a hospital route
+const dietRoutes = require('./routes/dietchart'); // Assuming you have a diet route
+const parentfeedbackroute = require('./routes/parentfeedback'); // Parent profile edit route
+const parentPediatricianRoute = require('./routes/patientPediatricfeedback'); // Parent pediatrician route
+const pediatricianProfile = require('./routes/pediatricianProfile'); // Pediatrician profile route
+
 
 // Ensure required directories exist
 const uploadDir = path.join(__dirname, 'uploads/licenses');
@@ -43,6 +52,14 @@ app.use('/api', feedbackRoutes);
 app.use('/api', pediatricFeedbackRoutes);
 app.use('/api', activityRoutes);
 app.use('/api', adminAnalyticsRoutes);
+app.use('/api', passwordRoutes);
+app.use('/api', chatRoutes);
+app.use('/api', EditPatientProfile);
+app.use('/api', hospitalRoutes); // Hospital routes
+app.use('/api', dietRoutes); // Diet chart routes
+app.use('/api', parentfeedbackroute); // Parent profile edit route
+app.use('/api', parentPediatricianRoute); // Parent pediatrician route
+app.use('/api', pediatricianProfile); // Pediatrician profile route
 
 
 // ✅ Wildcard route for frontend (only after static + API routes)

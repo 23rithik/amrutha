@@ -44,16 +44,19 @@ function ParentApproval() {
   });
 
   const statusColors = {
-    0: 'default', // Pending
-    1: 'success', // Approved
-    2: 'error'    // Rejected
+    0: 'default',     // Pending
+    1: 'success',     // Approved
+    2: 'error',       // Rejected
+    3: 'warning'      // Deactivated
   };
 
   const statusText = {
     0: 'Pending',
     1: 'Approved',
-    2: 'Rejected'
+    2: 'Rejected',
+    3: 'Deactivated'
   };
+
 
   const fetchParents = async () => {
     setIsRefreshing(true);
@@ -100,47 +103,44 @@ function ParentApproval() {
   }, []);
 
   const updateStatus = async (parentId, status, parentName) => {
-    if (isRefreshing) {
-      showSnackbar('Please wait until data loading completes', 'warning');
-      return;
-    }
+  if (isRefreshing) {
+    showSnackbar('Please wait until data loading completes', 'warning');
+    return;
+  }
 
-    try {
-      const response = await axiosInstance.put(
-        `/api/parents/${parentId}/status`, 
-        { status },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+  try {
+    const response = await axiosInstance.put(
+      `/api/parents/${parentId}/status`,
+      { status },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-      );
-      
-      if (response.data.success === false) {
-        throw new Error(response.data.message || 'Update failed');
       }
-      
-      const updatedParents = parents.map(parent => 
-        parent._id === parentId ? { ...parent, status } : parent
-      );
-      
-      setParents(updatedParents);
-      localStorage.setItem('parentsData', JSON.stringify(updatedParents));
-      
-      showSnackbar(
-        `${parentName} ${status === 1 ? 'approved' : 'rejected'} successfully!`, 
-        'success'
-      );
-      
-    } catch (err) {
-      console.error("Error updating status:", err);
-      const errorMessage = err.response?.data?.message || 
-                         err.message || 
-                         'Failed to update status';
-      showSnackbar(errorMessage, 'error');
-    }
-  };
+    );
+
+    const updatedParents = parents.map(parent =>
+      parent._id === parentId ? { ...parent, login_status: status } : parent
+    );
+
+    setParents(updatedParents);
+    localStorage.setItem('parentsData', JSON.stringify(updatedParents));
+
+    showSnackbar(
+      `${parentName} ${status === 1 ? 'approved' : 'rejected'} successfully!`,
+      'success'
+    );
+
+  } catch (err) {
+    console.error("Error updating status:", err);
+    const errorMessage = err.response?.data?.message ||
+      err.message ||
+      'Failed to update status';
+    showSnackbar(errorMessage, 'error');
+  }
+};
+
 
   // Snackbar functions
   const showSnackbar = (message, severity) => {
@@ -175,7 +175,7 @@ function ParentApproval() {
               </IconButton>
             )}
             <Typography variant="h6">Parent Approval</Typography>
-            <IconButton onClick={handleAvatarClick}>
+            {/* <IconButton onClick={handleAvatarClick}>
               <Avatar sx={{ bgcolor: '#ff99bb' }}>A</Avatar>
             </IconButton>
             <Menu
@@ -184,7 +184,7 @@ function ParentApproval() {
               onClose={handleCloseMenu}
             >
               <MenuItem onClick={handleChangePasswordClick}>Change Password</MenuItem>
-            </Menu>
+            </Menu> */}
           </Toolbar>
         </AppBar>
 
@@ -218,10 +218,11 @@ function ParentApproval() {
                     <TableCell>{parent.phone_number}</TableCell>
                     <TableCell>
                       <Chip 
-                        label={statusText[parent.status] || 'Unknown'} 
-                        color={statusColors[parent.status] || 'default'} 
+                        label={statusText[parent.login_status] || 'Unknown'} 
+                        color={statusColors[parent.login_status] || 'default'} 
                       />
                     </TableCell>
+
                     <TableCell>
                       <img
                         src={parent.child_photo}
@@ -245,20 +246,22 @@ function ParentApproval() {
                         color="success"
                         sx={{ mr: 1, mb: 1 }}
                         onClick={() => updateStatus(parent._id, 1, parent.parent_name)}
-                        disabled={parent.status === 1 || isRefreshing} // Disable if already approved (status 1) or refreshing
+                        disabled={parent.login_status === 1 || parent.login_status === 3 || isRefreshing}
                         startIcon={isRefreshing ? <CircularProgress size={20} /> : null}
                       >
                         {isRefreshing ? 'Processing...' : 'Approve'}
                       </Button>
+
                       <Button
                         variant="contained"
                         color="error"
                         onClick={() => updateStatus(parent._id, 2, parent.parent_name)}
-                        disabled={parent.status === 2 || isRefreshing} // Disable if already rejected (status 2) or refreshing
+                        disabled={parent.login_status === 2 || parent.login_status === 3 || isRefreshing}
                         startIcon={isRefreshing ? <CircularProgress size={20} /> : null}
                       >
                         {isRefreshing ? 'Processing...' : 'Reject'}
                       </Button>
+
                     </TableCell>
                   </TableRow>
                 ))

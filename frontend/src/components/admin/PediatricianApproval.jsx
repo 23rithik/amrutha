@@ -105,37 +105,57 @@ function PediatricianApproval() {
 
 
   const updateStatus = async (id, status) => {
-    try {
-      const pediatrician = pediatricians.find(p => p._id === id);
-      if (!pediatrician) {
-        showSnackbar('Pediatrician not found', 'error');
-        return;
-      }
-
-      const token = localStorage.getItem('token');
-      const response = await axiosInstance.put(
-        `/api/pediatricians/${id}/status`, 
-        { status }, 
-        { headers: { Authorization: token } }
-      );
-      
-      console.log("Pediatrician status updated:", response.data);
-      fetchPediatricians(); // Refresh list
-      
-      // Show success message with pediatrician's name
-      const action = status === 1 ? 'approved' : 'rejected';
-      showSnackbar(
-        `Dr. ${pediatrician.name} has been ${action} successfully`, 
-        'success'
-      );
-    } catch (err) {
-      console.error("Error updating status:", err);
-      showSnackbar(
-        `Error: ${err.response?.data?.message || err.message}`,
-        'error'
-      );
+  try {
+    const pediatrician = pediatricians.find(p => p._id === id);
+    if (!pediatrician) {
+      showSnackbar('Pediatrician not found', 'error');
+      return;
     }
-  };
+
+    const token = localStorage.getItem('token');
+    const response = await axiosInstance.put(
+      `/api/pediatricians/${id}/status`, 
+      { status }, 
+      { headers: { Authorization: token } }
+    );
+
+    console.log("Pediatrician status updated:", response.data);
+    fetchPediatricians(); // Refresh list
+
+    // Show success message with pediatrician's name
+    const action = status === 1 ? 'approved' : 'rejected';
+    showSnackbar(
+      `Dr. ${pediatrician.name} has been ${action} successfully`, 
+      'success'
+    );
+
+    // ✅ Record this action in the activity log
+    await recordActivity(`Pediatrician ${action}`, `Pediatrician ID: ${id}, Name: ${pediatrician.name}`);
+
+  } catch (err) {
+    console.error("Error updating status:", err);
+    showSnackbar(
+      `Error: ${err.response?.data?.message || err.message}`,
+      'error'
+    );
+  }
+};
+
+
+  const statusColors = {
+  0: 'default',     // Pending
+  1: 'success',     // Approved
+  2: 'error',       // Rejected
+  3: 'warning'      // Deactivated
+};
+
+const statusText = {
+  0: 'Pending',
+  1: 'Approved',
+  2: 'Rejected',
+  3: 'Deactivated'
+};
+
 
   const showSnackbar = (message, severity) => {
     setSnackbar({
@@ -173,7 +193,7 @@ function PediatricianApproval() {
               </IconButton>
             )}
             <Typography variant="h6">Pediatrician Approval</Typography>
-            <IconButton onClick={handleAvatarClick}>
+            {/* <IconButton onClick={handleAvatarClick}>
               <Avatar src={userAvatar} alt="Admin" />
             </IconButton>
             <Menu
@@ -184,7 +204,7 @@ function PediatricianApproval() {
               transformOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
               <MenuItem onClick={handleChangePasswordClick}>Change Password</MenuItem>
-            </Menu>
+            </Menu> */}
           </Toolbar>
         </AppBar>
 
@@ -200,6 +220,7 @@ function PediatricianApproval() {
                 <TableCell>Email</TableCell>
                 <TableCell>Phone</TableCell>
                 <TableCell>Address</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>License Number</TableCell>
                 <TableCell>License PDF</TableCell>
                 <TableCell align="center">Actions</TableCell>
@@ -213,6 +234,16 @@ function PediatricianApproval() {
                   <TableCell>{pediatrician.emailid}</TableCell>
                   <TableCell>{pediatrician.phone_number}</TableCell>
                   <TableCell>{pediatrician.address}</TableCell>
+                  <TableCell>
+                    <Alert
+                      icon={false}
+                      severity={statusColors[pediatrician.login_status] || 'info'}
+                      variant="outlined"
+                      sx={{ py: 0, px: 1, borderRadius: '8px', fontSize: '0.8rem' }}
+                    >
+                      {statusText[pediatrician.login_status] || 'Unknown'}
+                    </Alert>
+                  </TableCell>
                   <TableCell>{pediatrician.license_number}</TableCell>
                   <TableCell>
                     <Button
@@ -231,13 +262,16 @@ function PediatricianApproval() {
                       color="success"
                       sx={{ mr: 1 }}
                       onClick={() => updateStatus(pediatrician._id, 1)}
+                      disabled={pediatrician.login_status === 1 || pediatrician.login_status === 3}
                     >
                       Approve
                     </Button>
+
                     <Button
                       variant="contained"
                       color="error"
                       onClick={() => updateStatus(pediatrician._id, 2)}
+                      disabled={pediatrician.login_status === 2 || pediatrician.login_status === 3}
                     >
                       Reject
                     </Button>

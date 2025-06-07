@@ -6,7 +6,9 @@ const fs = require('fs');
 const multer = require('multer');
 
 const Patient = require('../model/parent');
+const Activity = require('../model/Activity');
 const Login = require('../model/login');
+const Pediatrician = require('../model/pediatrician'); // Assuming you have a Pediatrician model
 
 // Ensure upload directories exist
 const photoDir = 'uploads/photos/';
@@ -69,7 +71,9 @@ router.post('/patients/register', multiUpload, async (req, res) => {
             emailid,
             password: hashedPassword,
             child_photo,
-            medical_history_pdf
+            medical_history_pdf,
+            status: 'not selected',
+            pediatrician_id: null
         });
 
         const savedPatient = await newPatient.save();
@@ -92,5 +96,108 @@ router.post('/patients/register', multiUpload, async (req, res) => {
         res.status(500).json({ error: 'Registration failed', details: err.message });
     }
 });
+
+
+// GET parent status
+router.get('/parent/status/:id', async (req, res) => {
+  try {
+    console.log("Fetching status for parent ID:", req.params.id);
+    const parent = await Patient.findById(req.params.id);
+    console.log("dataaaa:",parent);
+    console.log("Parent found:", parent.status);
+    if (!parent) {
+      return res.status(404).json({ message: 'Parent not found' });
+    }   
+
+    return res.json({ status: parent.status });
+  } catch (err) {
+    console.error('Error fetching parent status:', err.message);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// GET all pediatricians
+router.get('/pediatricians', async (req, res) => {
+  try {
+    // Exclude the password field using projection
+    const pediatricians = await Pediatrician.find({}, '-password');
+    res.json(pediatricians);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+// PUT - update parent's status and assign pediatrician
+router.put('/parent/select-pediatrician/:parentId', async (req, res) => {
+  try {
+    const { pediatricianId } = req.body;
+    const parentId = req.params.parentId;
+
+    // Fetch the parent document first
+    const parent = await Patient.findById(parentId);
+    if (!parent) {
+      return res.status(404).json({ message: 'Parent not found' });
+    }
+
+    // Update the parent document
+    const updated = await Patient.findByIdAndUpdate(
+      parentId,
+      {
+        status: 'selected',
+        pediatrician_id: pediatricianId,
+      },
+      { new: true }
+    );
+
+    // Insert activity log with parent name
+    await Activity.create({
+      userType: 'patient',
+      userId: parentId,
+      action: 'Selected Pediatrician',
+      details: `Parent ${parent.parent_name} selected pediatrician with ID: ${pediatricianId}`,
+    });
+
+    res.json({ message: 'Pediatrician selected successfully', data: updated });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Route to get parent's name by ID
+router.get('/parent/name/:id', async (req, res) => {
+  try {
+    const parent = await Patient.findById(req.params.id).select('parent_name'); // Only fetch name
+    // console.log("Parent name:", parent);
+    if (!parent) {
+      return res.status(404).json({ message: 'Parent not found' });
+    }
+    return res.json({ name: parent.parent_name });
+    
+  } catch (err) {
+    console.error('Error fetching parent name:', err.message);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.get('/patient/photo/:parentId', async (req, res) => {
+  try {
+    const parentId = req.params.parentId;
+    // console.log("Fetching child photo for parent ID:", parentId);
+    // Find patient record by parent ID
+    const patient = await Patient.findOne({ _id: parentId });
+    // console.log("Patient record:", patient);
+    if (!patient) return res.status(404).json({ error: 'Patient not found' });
+
+    // Return just the child_photo field (e.g. filename)
+    res.json({ child_photo: patient.child_photo });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 module.exports = router;

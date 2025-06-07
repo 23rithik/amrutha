@@ -3,7 +3,8 @@ import {
   Box, AppBar, Toolbar, Avatar, IconButton, Typography,
   Menu, MenuItem, Grid, Card, CardContent, useMediaQuery,
   Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Paper
+  TableRow, Paper, Dialog, DialogTitle, DialogContent,
+  DialogActions, TextField, Button
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
@@ -22,6 +23,11 @@ function AdminDashboard() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userStats, setUserStats] = useState({});
   const [chartData, setChartData] = useState([]);
+  const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +46,7 @@ function AdminDashboard() {
 
         axiosInstance.get('/api/performance/weekly-stats')
           .then((weeklyDataResponse) => {
-            setChartData(weeklyDataResponse.data); // Uses 'week', 'newRegistrations', 'activeUsers'
+            setChartData(weeklyDataResponse.data);
           })
           .catch((error) => {
             console.error('Error fetching weekly stats:', error);
@@ -60,8 +66,40 @@ function AdminDashboard() {
   };
 
   const handleChangePasswordClick = () => {
-    navigate('/cpassword');
+    setOpenPasswordDialog(true);
     setAnchorEl(null);
+  };
+
+  const handleClosePasswordDialog = () => {
+    setOpenPasswordDialog(false);
+    setOldPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setErrorMsg('');
+  };
+
+  const handlePasswordSubmit = async () => {
+    if (newPassword !== confirmPassword) {
+      setErrorMsg('New passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.put('/api/password/change', {
+        oldPassword,
+        newPassword,
+      });
+
+      if (response.data.success) {
+        alert('Password changed successfully');
+        handleClosePasswordDialog();
+      } else {
+        setErrorMsg(response.data.message || 'Password change failed');
+      }
+    } catch (error) {
+      console.error('Password change error:', error);
+      setErrorMsg('Password change failed');
+    }
   };
 
   return (
@@ -92,80 +130,110 @@ function AdminDashboard() {
           </Toolbar>
         </AppBar>
 
-        {/* Stats Cards */}
+        {/* Change Password Dialog */}
+        <Dialog open={openPasswordDialog} onClose={handleClosePasswordDialog}>
+          <DialogTitle>Change Password</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Old Password"
+              type="password"
+              fullWidth
+              margin="normal"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+            />
+            <TextField
+              label="New Password"
+              type="password"
+              fullWidth
+              margin="normal"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <TextField
+              label="Confirm New Password"
+              type="password"
+              fullWidth
+              margin="normal"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            {errorMsg && (
+              <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                {errorMsg}
+              </Typography>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClosePasswordDialog}>Cancel</Button>
+            <Button variant="contained" color="primary" onClick={handlePasswordSubmit}>
+              Update Password
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Stats Cards and Graph */}
         <Grid container spacing={2} mt={2}>
           <Grid item xs={12} sm={6} md={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h4">{userStats.totalUsers ?? 'Loading...'}</Typography>
-                <Typography>Total Users</Typography>
-              </CardContent>
-            </Card>
+            <Card><CardContent>
+              <Typography variant="h4">{userStats.totalUsers ?? 'Loading...'}</Typography>
+              <Typography>Total Users</Typography>
+            </CardContent></Card>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h4">{userStats.activeUsers ?? 'Loading...'}</Typography>
-                <Typography>Active Users</Typography>
-              </CardContent>
-            </Card>
+            <Card><CardContent>
+              <Typography variant="h4">{userStats.activeUsers ?? 'Loading...'}</Typography>
+              <Typography>Active Users</Typography>
+            </CardContent></Card>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h4">{userStats.newRegistrations ?? 'Loading...'}</Typography>
-                <Typography>New Registrations</Typography>
-              </CardContent>
-            </Card>
+            <Card><CardContent>
+              <Typography variant="h4">{userStats.newRegistrations ?? 'Loading...'}</Typography>
+              <Typography>New Registrations</Typography>
+            </CardContent></Card>
           </Grid>
 
-          {/* Line Chart */}
           <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">User Activity (Last 6 Weeks)</Typography>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="week" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="newRegistrations" stroke="#ffc658" name="New Registrations" />
-                    <Line type="monotone" dataKey="activeUsers" stroke="#82ca9d" name="Active Users" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+            <Card><CardContent>
+              <Typography variant="h6">User Activity (Last 6 Weeks)</Typography>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="week" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="newRegistrations" stroke="#ffc658" />
+                  <Line type="monotone" dataKey="activeUsers" stroke="#82ca9d" />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent></Card>
           </Grid>
 
-          {/* Table */}
           <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6">Weekly Breakdown</Typography>
-                <TableContainer component={Paper}>
-                  <Table sx={{ minWidth: 650 }} aria-label="user-stats-table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Week</TableCell>
-                        <TableCell align="right">Active Users</TableCell>
-                        <TableCell align="right">New Registrations</TableCell>
+            <Card><CardContent>
+              <Typography variant="h6">Weekly Breakdown</Typography>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Week</TableCell>
+                      <TableCell align="right">Active Users</TableCell>
+                      <TableCell align="right">New Registrations</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {chartData.map((row) => (
+                      <TableRow key={row.week}>
+                        <TableCell>{row.week}</TableCell>
+                        <TableCell align="right">{row.activeUsers}</TableCell>
+                        <TableCell align="right">{row.newRegistrations}</TableCell>
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {chartData.map((row) => (
-                        <TableRow key={row.week}>
-                          <TableCell component="th" scope="row">{row.week}</TableCell>
-                          <TableCell align="right">{row.activeUsers}</TableCell>
-                          <TableCell align="right">{row.newRegistrations}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </CardContent>
-            </Card>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent></Card>
           </Grid>
         </Grid>
       </Box>

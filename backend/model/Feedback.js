@@ -8,8 +8,9 @@ const feedbackSchema = new mongoose.Schema({
   reply: String,
   parent_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Patient' // or 'Login' if linked with Login collection
+    ref: 'patient', // or 'Login' if linked with Login collection
+    required: true
   }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Feedback', feedbackSchema);

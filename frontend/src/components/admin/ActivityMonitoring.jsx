@@ -75,7 +75,7 @@ const ActivityMonitoring = () => {
               </IconButton>
             )}
             <Typography variant="h6">Activity Monitoring</Typography>
-            <IconButton onClick={handleAvatarClick}>
+            {/* <IconButton onClick={handleAvatarClick}>
               <Avatar src={userAvatar} alt="Admin" />
             </IconButton>
             <Menu
@@ -86,7 +86,7 @@ const ActivityMonitoring = () => {
               transformOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
               <MenuItem onClick={handleChangePasswordClick}>Change Password</MenuItem>
-            </Menu>
+            </Menu> */}
           </Toolbar>
         </AppBar>
 

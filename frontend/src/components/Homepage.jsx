@@ -44,7 +44,7 @@ const Homepage = () => {
           <div className="intro-section" data-aos="fade-up" data-aos-delay="400">
             <div className="image-container">
               <img src="/assets/mother-baby.png" alt="Child Care" className="homepage-image" />
-            </div>
+            </div>  
 
             <div className="text-container">
               <Typography variant="h2" className="welcome-text" data-aos="fade-down" data-aos-delay="100">

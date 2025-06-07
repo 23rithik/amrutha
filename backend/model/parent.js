@@ -38,6 +38,16 @@ const patientSchema = new mongoose.Schema({
     type: String, // Will store file path or URL
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['not selected', 'selected', 'rejected'],
+    default: 'pending',
+  },
+  pediatrician_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'pediatrician', // Assuming your pediatrician model is named 'pediatrician'
+    default: null,
+  },
 }, {
   timestamps: true,
 });

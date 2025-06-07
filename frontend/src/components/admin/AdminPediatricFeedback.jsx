@@ -91,7 +91,7 @@ const AdminPediatricFeedback = () => {
               </IconButton>
             )}
             <Typography variant="h6">Pediatrician Feedback Management</Typography>
-            <IconButton onClick={handleAvatarClick}>
+            {/* <IconButton onClick={handleAvatarClick}>
               <Avatar src={userAvatar} alt="Admin" />
             </IconButton>
             <Menu
@@ -102,7 +102,7 @@ const AdminPediatricFeedback = () => {
               transformOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
               <MenuItem onClick={handleChangePasswordClick}>Change Password</MenuItem>
-            </Menu>
+            </Menu> */}
           </Toolbar>
         </AppBar>
         <Typography variant="h4" gutterBottom sx={{ mt: 2 }}>

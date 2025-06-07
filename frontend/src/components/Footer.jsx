@@ -15,10 +15,10 @@ const Footer = () => {
 
         <Box className="footer-links">
           <Typography variant="h6" className="footer-title">Quick Links</Typography>
-          <Link href="/" underline="hover" className="footer-link">Home</Link>
-          <Link href="/about" underline="hover" className="footer-link">About Us</Link>
-          <Link href="/contact" underline="hover" className="footer-link">Contact</Link>
-          <Link href="/login" underline="hover" className="footer-link">Login</Link>
+          <Link href="/" underline="hover" className="footer-link" sx={{ textDecoration: 'none', color: 'white' }}>Home</Link>
+          <Link href="/about" underline="hover" className="footer-link" sx={{ textDecoration: 'none', color: 'white' }}>About Us</Link>
+          <Link href="/contact" underline="hover" className="footer-link" sx={{ textDecoration: 'none', color: 'white' }}>Contact</Link>
+          <Link href="/login" underline="hover" className="footer-link" sx={{ textDecoration: 'none', color: 'white' }}>Login</Link>
         </Box>
 
         <Box className="footer-contact">
