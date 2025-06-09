@@ -24,6 +24,7 @@ const dietRoutes = require('./routes/dietchart'); // Assuming you have a diet ro
 const parentfeedbackroute = require('./routes/parentfeedback'); // Parent profile edit route
 const parentPediatricianRoute = require('./routes/patientPediatricfeedback'); // Parent pediatrician route
 const pediatricianProfile = require('./routes/pediatricianProfile'); // Pediatrician profile route
+const aichat = require('./routes/aichat'); // AI Chatbot route
 
 
 // Ensure required directories exist
@@ -60,6 +61,7 @@ app.use('/api', dietRoutes); // Diet chart routes
 app.use('/api', parentfeedbackroute); // Parent profile edit route
 app.use('/api', parentPediatricianRoute); // Parent pediatrician route
 app.use('/api', pediatricianProfile); // Pediatrician profile route
+app.use('/api', aichat); // AI Chatbot route
 
 
 // ✅ Wildcard route for frontend (only after static + API routes)

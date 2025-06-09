@@ -26,6 +26,7 @@ import ReferHospital from './components/pediatrician/ReferHospital';
 import DietChartPage from './components/pediatrician/DietChartPage';
 import PediatricianFeedback from './components/pediatrician/PediatricianparentFeedback';
 import PediatricianAdminFeedback from './components/pediatrician/PediatricianAdminFeedback';
+import ParentAIChatbot from './components/parent/ParentAIChatbot';
 
 
 const App = () => {
@@ -64,6 +65,7 @@ const App = () => {
         <Route path='/diet-chart' element={<ParentDietChart/>}/>
         <Route path='/feedback/admin' element={<ParentFeedbackPage />} />
         <Route path='/feedback/pediatrician' element={<ParentPediatricianFeedbackPage/>} />
+        <Route path="/assistant" element={<ParentAIChatbot/>}/>
         
 
       </Route>
