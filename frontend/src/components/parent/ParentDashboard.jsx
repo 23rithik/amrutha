@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Avatar, TextField, Paper } from '@mui/material';
+import {
+  Box, Typography, Button, Avatar, TextField, Paper,
+  Dialog, DialogTitle, DialogContent, DialogActions
+} from '@mui/material';
+
 import ParentHeader from './ParentHeader1';
 import ParentFooter from './ParentFooter1';
 
@@ -7,18 +11,15 @@ import ChatIcon from '@mui/icons-material/Chat';
 import PersonIcon from '@mui/icons-material/Person';
 
 import axiosInstance from '../../axiosinterceptor';
-import { jwtDecode } from 'jwt-decode'; // Fixed import: no curly braces
+import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
 const ParentDashboard = () => {
   const [parentName, setParentName] = useState('');
   const [childPhoto, setChildPhoto] = useState('');
   const [chatInput, setChatInput] = useState('');
-  const [messages, setMessages] = useState([
-    { sender: 'pediatrician', text: 'Hello! How is your child doing today?' },
-    { sender: 'parent', text: 'She had a mild fever yesterday.' },
-    { sender: 'pediatrician', text: 'Keep her hydrated. Let me know if the fever continues.' }
-  ]);
+  const [messages, setMessages] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -40,7 +41,6 @@ const ParentDashboard = () => {
 
   const handleSendMessage = async () => {
     if (chatInput.trim() === '') return;
-
     try {
       const token = localStorage.getItem('token');
       const decoded = jwtDecode(token);
@@ -48,7 +48,7 @@ const ParentDashboard = () => {
 
       await axiosInstance.post('/api/chat/send', {
         parent_id: parentId,
-        pediatrician_id: null, // Update this when linked
+        pediatrician_id: null,
         sender: 'parent',
         message: chatInput
       });
@@ -104,6 +104,7 @@ const ParentDashboard = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <ParentHeader />
+
       <Box
         sx={{
           flexGrow: 1,
@@ -112,20 +113,12 @@ const ParentDashboard = () => {
           px: { xs: 2, sm: 4, md: 6 },
           pt: 13,
           pb: 4,
-          textAlign: 'left',
           maxWidth: '1100px',
-          marginLeft: '200px',
+          marginLeft: '200px',  
         }}
       >
-        {/* Welcome + Avatar row */}
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 6,
-          }}
-        >
+        {/* Header Row */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6 }}>
           <Typography
             variant="h3"
             sx={{
@@ -163,25 +156,24 @@ const ParentDashboard = () => {
           </Box>
         </Box>
 
-        {/* Interact Section */}
+        {/* Chat Box */}
         <Box
           sx={{
             backgroundColor: '#fff',
             borderRadius: 3,
             boxShadow: '0 6px 15px rgba(0,0,0,0.25)',
             p: 4,
-            mb: 3,
+            mb: 4,
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#c2185b' }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#c2185b', mb: 2 }}>
             Interact with Your Pediatrician
           </Typography>
           <Typography variant="body1" sx={{ mb: 3 }}>
             Communicate directly with your pediatrician for queries and updates on your child's health.
           </Typography>
 
-          {/* Chat Box */}
-          <Paper elevation={3} sx={{ p: 2, maxHeight: 300, overflowY: 'auto', mb: 2, backgroundColor: '#fefefe' }}>
+          <Paper elevation={3} sx={{ p: 2, maxHeight: 300, overflowY: 'auto', mb: 2 }}>
             {messages.map((msg, index) => (
               <Box
                 key={index}
@@ -207,7 +199,6 @@ const ParentDashboard = () => {
             ))}
           </Paper>
 
-          {/* Input Box */}
           <Box sx={{ display: 'flex', gap: 2 }}>
             <TextField
               fullWidth
@@ -217,7 +208,7 @@ const ParentDashboard = () => {
               variant="outlined"
               size="small"
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === 'Enter') {
                   e.preventDefault();
                   handleSendMessage();
                 }
@@ -228,13 +219,65 @@ const ParentDashboard = () => {
               color="secondary"
               startIcon={<ChatIcon />}
               onClick={handleSendMessage}
-              sx={{ px: 3 }}
             >
               Send
             </Button>
           </Box>
         </Box>
+
+        {/* Animated Pediatrician Avatar + Symptom Checker */}
+        
       </Box>
+<Box
+  sx={{
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: 2,
+    mr: 4,
+    mt: -18,
+  }}
+>
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      animation: 'bounce 2s infinite',
+      '@keyframes bounce': {
+        '0%, 100%': { transform: 'translateY(0)' },
+        '50%': { transform: 'translateY(-6px)' },
+      },
+    }}
+  >
+    <Avatar
+      src="https://cdn-icons-png.flaticon.com/512/706/706830.png"
+      sx={{
+        width: 60,
+        height: 60,
+        mb: 1,
+        backgroundColor: '#fff',
+        boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+        cursor: 'pointer',
+      }}
+      onClick={() => setOpenModal(true)}
+    />
+    
+  </Box>
+</Box>
+
+      {/* Modal */}
+      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+        <DialogTitle>Symptom Checker</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Based on symptoms, we can help guide your next steps. Would you like to explore symptom & medication suggestions?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+          <Button variant="contained" onClick={() => navigate('/generate')}>Yes, Show Suggestions</Button>
+        </DialogActions>
+      </Dialog>
+
       <ParentFooter />
     </Box>
   );

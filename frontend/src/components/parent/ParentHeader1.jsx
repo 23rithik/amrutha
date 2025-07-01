@@ -69,14 +69,14 @@ const ParentHeader1 = () => {
             to="/referred-hospitals"
             className={({ isActive }) => (isActive ? 'nav-button active' : 'nav-button')}
           >
-            Referred Hospitals
+            Hospitals
           </NavLink>
 
           <NavLink
             to="/diet-chart"
             className={({ isActive }) => (isActive ? 'nav-button active' : 'nav-button')}
           >
-            Diet Chart
+            Diet
           </NavLink>
 
           {/* Feedback dropdown */}
