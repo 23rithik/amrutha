@@ -166,7 +166,7 @@ const ParentDashboard = () => {
             mb: 4,
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#c2185b', mb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#c2185b',  }}>
             Interact with Your Pediatrician
           </Typography>
           <Typography variant="body1" sx={{ mb: 3 }}>

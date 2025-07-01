@@ -1,0 +1,12 @@
+fever,cough,rash,vomiting,diarrhea,difficulty_breathing,poor_feeding,seizures,lethargy,bulging_fontanelle,irritability,dehydration,jaundice,sneezing,runny_nose,disease
+1,1,1,0,0,0,1,0,1,0,1,1,0,1,1,measles
+1,1,0,0,0,1,1,0,1,0,1,0,0,1,1,bronchiolitis
+1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,fever
+0,0,0,1,1,0,1,0,1,0,1,1,0,0,0,diarrhea
+1,0,0,1,0,1,1,1,1,1,1,1,0,0,0,meningitis
+0,0,1,0,0,0,0,0,0,0,0,0,0,1,1,allergy
+1,0,0,1,1,1,1,1,1,1,1,1,0,1,1,sepsis
+0,0,0,1,1,1,0,0,1,0,0,1,0,0,0,dehydration
+1,1,0,0,0,0,0,0,0,0,1,0,1,1,1,common_cold
+1,0,0,0,0,0,1,1,1,1,1,0,1,0,0,encephalitis
+0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,neonatal_jaundice

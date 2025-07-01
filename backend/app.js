@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 
@@ -25,6 +26,7 @@ const parentfeedbackroute = require('./routes/parentfeedback'); // Parent profil
 const parentPediatricianRoute = require('./routes/patientPediatricfeedback'); // Parent pediatrician route
 const pediatricianProfile = require('./routes/pediatricianProfile'); // Pediatrician profile route
 const aichat = require('./routes/aichat'); // AI Chatbot route
+const medicationRoutes = require('./routes/generateMedication');
 
 
 // Ensure required directories exist
@@ -40,6 +42,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
+app.use(bodyParser.json());
 
 // ✅ Static files for uploads (images, PDFs)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -62,6 +65,7 @@ app.use('/api', parentfeedbackroute); // Parent profile edit route
 app.use('/api', parentPediatricianRoute); // Parent pediatrician route
 app.use('/api', pediatricianProfile); // Pediatrician profile route
 app.use('/api', aichat); // AI Chatbot route
+app.use('/api/medication', medicationRoutes);
 
 
 // ✅ Wildcard route for frontend (only after static + API routes)
