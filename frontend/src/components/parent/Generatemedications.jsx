@@ -21,16 +21,24 @@ import axiosInstance from '../../axiosinterceptor';
 const Generatemedications = () => {
   const [symptoms, setSymptoms] = useState('');
   const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axiosInstance.post('/api/medication/predict', { symptoms });
-      setResult(res.data);
-    } catch (err) {
-      alert('Prediction failed. Try again.');
+  e.preventDefault();
+  setError('');
+  setResult(null);
+  try {
+    const res = await axiosInstance.post('/api/medication/predict', { symptoms });
+    setResult(res.data);
+    // console.log('Prediction result:', res.data);
+  } catch (err) {
+    if (err.response && err.response.data.error) {
+      setError(err.response.data.error);
+    } else {
+      setError('Enter a valid symptom. Try again.');
     }
-  };
+  }
+};
 
   return (
     <>
@@ -70,6 +78,11 @@ const Generatemedications = () => {
                 </Button>
               </Box>
             </Box>
+            {error && (
+              <div style={{ marginTop: '20px', color: 'red' }}>
+                <strong>Error:</strong> {error}
+              </div>
+            )}
 
             {result && (
               <Box sx={{ mt: 5 }}>

@@ -11,7 +11,7 @@ router.post('/predict', async (req, res) => {
     res.json(response.data);
   } catch (err) {
     console.error('ML API Error:', err.message);
-    res.status(500).json({ error: 'ML prediction failed' });
+    res.status(500).json({ error: 'Enter valid symptoms' });
   }
 });
 
