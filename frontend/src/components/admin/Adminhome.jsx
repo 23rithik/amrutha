@@ -15,6 +15,7 @@ import {
   Legend, ResponsiveContainer
 } from 'recharts';
 
+
 const userAvatar = 'avatar.jpg';
 
 function AdminDashboard() {
@@ -103,6 +104,7 @@ function AdminDashboard() {
   };
 
   return (
+    <>
     <Box sx={{ display: 'flex' }} className="admin-dashboard">
       <Sidebar isMobile={isMobile} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
@@ -173,7 +175,7 @@ function AdminDashboard() {
         </Dialog>
 
         {/* Stats Cards and Graph */}
-        <Grid container spacing={2} mt={2}>
+        <Grid container spacing={3} mt={2}>
           <Grid item xs={12} sm={6} md={4}>
             <Card><CardContent>
               <Typography variant="h4">{userStats.totalUsers ?? 'Loading...'}</Typography>
@@ -196,7 +198,7 @@ function AdminDashboard() {
           <Grid item xs={12} md={6}>
             <Card><CardContent>
               <Typography variant="h6">User Activity (Last 6 Weeks)</Typography>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width={350} height={370}>
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="week" />
@@ -219,7 +221,7 @@ function AdminDashboard() {
                     <TableRow>
                       <TableCell>Week</TableCell>
                       <TableCell align="right">Active Users</TableCell>
-                      <TableCell align="right">New Registrations</TableCell>
+                      <TableCell align="right">New Approvals</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -237,7 +239,27 @@ function AdminDashboard() {
           </Grid>
         </Grid>
       </Box>
+      {/* <AdminFooter /> */}
+      
     </Box>
+    {/* Footer styled like AppBar */}
+    <Box
+      component="footer"
+      sx={{
+        backgroundColor: '#ff99bb',
+        color: '#fff',
+        py: 2,
+        px: 2,
+        mt: 'auto',
+        textAlign: 'center',
+        ml: 28,
+      }}
+    >
+      <Typography variant="body2">
+        © {new Date().getFullYear()} PEDIATRIC-PAL | Admin Dashboard
+      </Typography>
+    </Box>
+</>
   );
 }
 

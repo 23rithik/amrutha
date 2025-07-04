@@ -80,6 +80,7 @@ const AdminFeedback = () => {
   }
 
   return (
+    <>
     <Box sx={{ display: 'flex' }}>
       <Sidebar
         isMobile={isMobile}
@@ -146,12 +147,31 @@ const AdminFeedback = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
       </Snackbar>
     </Box>
+    {/* Footer styled like AppBar */}
+            <Box
+              component="footer"
+              sx={{
+                backgroundColor: '#ff99bb',
+                color: '#fff',
+                py: 2,
+                px: 2,
+                mt: 'auto',
+                textAlign: 'center',
+                ml: 30,
+              }}
+            >
+              <Typography variant="body2">
+                © {new Date().getFullYear()} PEDIATRIC-PAL | Parent Feedback
+              </Typography>
+            </Box>
+            </>
   );
 };
 

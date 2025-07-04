@@ -63,6 +63,7 @@ const ActivityMonitoring = () => {
   };
 
   return (
+    <>
     <Box sx={{ display: 'flex' }}>
       <Sidebar isMobile={isMobile} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
@@ -138,6 +139,24 @@ const ActivityMonitoring = () => {
         )}
       </Box>
     </Box>
+    {/* Footer styled like AppBar */}
+            <Box
+              component="footer"
+              sx={{
+                backgroundColor: '#ff99bb',
+                color: '#fff',
+                py: 2,
+                px: 2,
+                mt: 'auto',
+                textAlign: 'center',
+                ml: 30,
+              }}
+            >
+              <Typography variant="body2">
+                © {new Date().getFullYear()} PEDIATRIC-PAL | Activity Monitoring
+              </Typography>
+            </Box>
+            </>
   );
 };
 
