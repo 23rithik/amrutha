@@ -55,6 +55,21 @@ const SignupParent = () => {
     }
   };
 
+  const isFormValid = () => {
+    return (
+      formData.parent_name &&
+      formData.child_name &&
+      formData.emailid &&
+      formData.password &&
+      formData.confirmPassword &&
+      formData.address &&
+      formData.phone_number &&
+      formData.child_photo &&
+      formData.medical_history_pdf &&
+      !fileError
+    );
+  };
+
   const resetForm = () => {
     setFormData({
       parent_name: '',
@@ -244,7 +259,10 @@ const SignupParent = () => {
 
         {fileError && <p style={{ color: 'red' }}>{fileError}</p>}
 
-        <button type="submit">Sign Up</button>
+        <button type="submit" disabled={!isFormValid()}>
+          Sign Up
+        </button>
+
       </form>
 
       <p style={{ marginTop: '15px' }}>

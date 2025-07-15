@@ -61,6 +61,21 @@ const SignupPediatrician = () => {
     if (fileInput) fileInput.value = '';
   };
 
+  const isFormValid = () => {
+    return (
+      formData.name.trim() &&
+      formData.emailid.trim() &&
+      formData.license_number.trim() &&
+      formData.phone_number.trim() &&
+      formData.address.trim() &&
+      formData.password &&
+      formData.confirmPassword &&
+      formData.license_pdf &&
+      !fileError
+    );
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -204,7 +219,10 @@ const SignupPediatrician = () => {
 
         {fileError && <p style={{ color: 'red' }}>{fileError}</p>}
 
-        <button type="submit">Sign Up</button>
+        <button type="submit" disabled={!isFormValid()}>
+          Sign Up
+        </button>
+
       </form>
 
       <p style={{ marginTop: '15px' }}>
