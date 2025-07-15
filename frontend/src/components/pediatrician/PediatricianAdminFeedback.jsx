@@ -85,105 +85,97 @@ const PediatricianAdminFeedback = () => {
   };
 
   return (
-    <>
-      <PediatricianHeader />
-      <Box sx={{ minHeight: '100vh', pt: 17, mb: 20 }}>
-        <Paper
-          sx={{
-            maxWidth: 700,
-            mx: 'auto',
-            p: 4,
-            borderRadius: 4,
-            backgroundColor: 'rgba(255,255,255,0.85)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-          }}
-        >
-          <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
-            Pediatrician Feedback to Admin
-          </Typography>
+  <Box display="flex" flexDirection="column" minHeight="100vh">
+    <PediatricianHeader />
+    <Box sx={{ flex: 1, pt: 17 }}>
+      <Paper
+        sx={{
+          maxWidth: 700,
+          mx: 'auto',
+          p: 4,
+          borderRadius: 4,
+          backgroundColor: 'rgba(255,255,255,0.85)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        }}
+      >
+        <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+          Pediatrician Feedback to Admin
+        </Typography>
 
-          <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-            <TextField
-              label="Your Feedback"
-              multiline
-              rows={4}
-              fullWidth
-              value={message}
-              onChange={e => setMessage(e.target.value)}
-              required
-              sx={{ mb: 2 }}
-            />
-            <Button variant="contained" color="primary" type="submit" fullWidth>
-              Submit Feedback
-            </Button>
-          </form>
+        <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+          <TextField
+            label="Your Feedback"
+            multiline
+            rows={4}
+            fullWidth
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            required
+            sx={{ mb: 2 }}
+          />
+          <Button variant="contained" color="primary" type="submit" fullWidth>
+            Submit Feedback
+          </Button>
+        </form>
 
-          <Typography variant="h6" gutterBottom>
-            Your Previous Feedbacks
-          </Typography>
-          {feedbacks.length === 0 ? (
-            <Typography>No feedback submitted yet.</Typography>
-          ) : (
-            <List>
-              {feedbacks.map(fb => (
-                <Paper
-                  key={fb._id}
-                  sx={{ p: 2, mb: 2, backgroundColor: '#f9f9f9', borderRadius: 2 }}
-                  elevation={1}
-                >
-                  <Typography sx={{ whiteSpace: 'pre-wrap' }}><strong>Message:</strong> {fb.message}</Typography>
+        <Typography variant="h6" gutterBottom>
+          Your Previous Feedbacks
+        </Typography>
+        {feedbacks.length === 0 ? (
+          <Typography>No feedback submitted yet.</Typography>
+        ) : (
+          <List>
+            {feedbacks.map(fb => (
+              <Paper
+                key={fb._id}
+                sx={{ p: 2, mb: 2, backgroundColor: '#f9f9f9', borderRadius: 2 }}
+                elevation={1}
+              >
+                <Typography sx={{ whiteSpace: 'pre-wrap' }}>
+                  <strong>Message:</strong> {fb.message}
+                </Typography>
 
-                  <Divider sx={{ my: 1 }} />
+                <Divider sx={{ my: 1 }} />
 
-                  <Typography>
-                    <strong>Admin Reply:</strong>{' '}
-                    {editingId === fb._id ? (
-                      <>
-                        <TextField
-                          multiline
-                          rows={3}
-                          fullWidth
-                          value={editingReply}
-                          onChange={e => setEditingReply(e.target.value)}
-                        />
-                        <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            onClick={saveReplyEdit}
-                            color="primary"
-                          >
-                            Save
-                          </Button>
-                          <Button variant="outlined" size="small" onClick={cancelEditing}>
-                            Cancel
-                          </Button>
-                        </Box>
-                      </>
-                    ) : (
-                      <span>{fb.reply || 'No reply yet'}</span>
-                    )}
-                  </Typography>
-
-                  {fb.reply && editingId !== fb._id && (
-                    <Button
-                      variant="text"
-                      size="small"
-                      sx={{ mt: 1 }}
-                      onClick={() => startEditing(fb._id, fb.reply)}
-                    >
-                      Edit Reply
-                    </Button>
+                <Typography>
+                  <strong>Admin Reply:</strong>{' '}
+                  {editingId === fb._id ? (
+                    <>
+                      <TextField
+                        multiline
+                        rows={3}
+                        fullWidth
+                        value={editingReply}
+                        onChange={e => setEditingReply(e.target.value)}
+                      />
+                      <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={saveReplyEdit}
+                          color="primary"
+                        >
+                          Save
+                        </Button>
+                        <Button variant="outlined" size="small" onClick={cancelEditing}>
+                          Cancel
+                        </Button>
+                      </Box>
+                    </>
+                  ) : (
+                    <span>{fb.reply || 'No reply yet'}</span>
                   )}
-                </Paper>
-              ))}
-            </List>
-          )}
-        </Paper>
-      </Box>
-      <PediatricianFooter />
-    </>
-  );
+                </Typography>
+              </Paper>
+            ))}
+          </List>
+        )}
+      </Paper>
+    </Box>
+    <PediatricianFooter />
+  </Box>
+);
+
 };
 
 export default PediatricianAdminFeedback;
