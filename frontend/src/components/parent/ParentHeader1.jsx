@@ -51,7 +51,7 @@ const ParentHeader1 = () => {
           <NavLink
             to="/parent-dashboard"
             className={
-              location.pathname.startsWith('/parent-dashboard') || location.pathname === '/editprofile'
+              location.pathname.startsWith('/parent-dashboard') || location.pathname === '/editprofile' || location.pathname === '/generate'
                 ? 'nav-button active'
                 : 'nav-button'
             }
