@@ -44,7 +44,7 @@ const ReferredHospitals = () => {
           sx={{
             fontWeight: 'bold',
             color: '#c2185b',
-            mb: 4,
+            mb: 6,
             mt: 2,
             textShadow: '3px 3px 1px rgba(0, 0, 0, 0.2)',
           }}
