@@ -120,7 +120,9 @@ const ReferHospital = () => {
 
   return (
     <>
+    <Box display="flex" flexDirection="column" minHeight="100vh">
       <PediatricianHeader />
+      <Box component="main" flex="1">
       <Box sx={{ maxWidth: 960, mx: 'auto', mt: 16, mb: 3 }}>
         <Typography variant="h4" mb={4} align="center">Parents Available</Typography>
 
@@ -251,8 +253,9 @@ const ReferHospital = () => {
           <Button onClick={handleDeleteReferral} color="error">Delete</Button>
         </DialogActions>
       </Dialog>
-
+</Box>
       <PediatricianFooter />
+      </Box>
     </>
   );
 };

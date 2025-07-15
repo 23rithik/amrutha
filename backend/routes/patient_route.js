@@ -89,7 +89,7 @@ router.post('/patients/register', multiUpload, async (req, res) => {
 
         await newLogin.save();
 
-        res.status(201).json({ message: 'Patient and login registered successfully' });
+        res.status(201).json({ message: 'Patient registered successfully' });
 
     } catch (err) {
         console.error('Error during patient registration:', err);
